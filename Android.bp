@@ -12,6 +12,8 @@ cc_defaults {
     srcs: [
         "jcapimin.c",
         "jcapistd.c",
+        "jaricom.c",
+        "jcarith.c",
         "jccoefct.c",
         "jccolor.c",
         "jcdctmgr.c",
@@ -28,6 +30,7 @@ cc_defaults {
         "jctrans.c",
         "jdapimin.c",
         "jdapistd.c",
+        "jdarith.c",
         "jdatadst.c",
         "jdatasrc.c",
         "jdcoefct.c",
@@ -71,12 +74,6 @@ cc_defaults {
                 "simd/jsimd_arm_neon.S",
                 "simd/jsimd_arm.c",
             ],
-            armv7_a_neon: {
-                // If we are certain that the ARM v7 device has NEON (and there
-                // is no need for a runtime check), we can indicate that with a
-                // flag.
-                cflags: ["-D__ARM_HAVE_NEON__"],
-            },
         },
         arm64: {
             // ARM v8 64-bit NEON
@@ -170,6 +167,17 @@ cc_defaults {
 // Also build as a shared library.
 cc_library {
     name: "libjpeg",
+    host_supported: true,
+    vendor_available: true,
+    target: {
+        // TODO(b/67474260) Turn this back on
+        darwin: {
+            enabled: false,
+        },
+    },
+    vndk: {
+        enabled: true,
+    },
     defaults: ["libjpeg-defaults"],
     export_include_dirs: ["."],
 }
