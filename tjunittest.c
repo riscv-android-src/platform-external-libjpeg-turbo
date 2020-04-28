@@ -1,5 +1,5 @@
 /*
- * Copyright (C)2009-2014, 2017-2019 D. R. Commander.  All Rights Reserved.
+ * Copyright (C)2009-2014, 2017-2018 D. R. Commander.  All Rights Reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -46,7 +46,7 @@
 #endif
 
 
-static void usage(char *progName)
+void usage(char *progName)
 {
   printf("\nUSAGE: %s [options]\n\n", progName);
   printf("Options:\n");
@@ -96,7 +96,7 @@ int exitStatus = 0;
 #define BAILOUT() { exitStatus = -1;  goto bailout; }
 
 
-static void initBuf(unsigned char *buf, int w, int h, int pf, int flags)
+void initBuf(unsigned char *buf, int w, int h, int pf, int flags)
 {
   int roffset = tjRedOffset[pf];
   int goffset = tjGreenOffset[pf];
@@ -174,8 +174,8 @@ static void initBuf(unsigned char *buf, int w, int h, int pf, int flags)
 }
 
 
-static int checkBuf(unsigned char *buf, int w, int h, int pf, int subsamp,
-                    tjscalingfactor sf, int flags)
+int checkBuf(unsigned char *buf, int w, int h, int pf, int subsamp,
+             tjscalingfactor sf, int flags)
 {
   int roffset = tjRedOffset[pf];
   int goffset = tjGreenOffset[pf];
@@ -270,8 +270,8 @@ bailout:
 
 #define PAD(v, p)  ((v + (p) - 1) & (~((p) - 1)))
 
-static int checkBufYUV(unsigned char *buf, int w, int h, int subsamp,
-                       tjscalingfactor sf)
+int checkBufYUV(unsigned char *buf, int w, int h, int subsamp,
+                tjscalingfactor sf)
 {
   int row, col;
   int hsf = tjMCUWidth[subsamp] / 8, vsf = tjMCUHeight[subsamp] / 8;
@@ -296,7 +296,7 @@ static int checkBufYUV(unsigned char *buf, int w, int h, int subsamp,
     }
   }
   if (subsamp != TJSAMP_GRAY) {
-    halfway = 16 / vsf * sf.num / sf.denom;
+    int halfway = 16 / vsf * sf.num / sf.denom;
 
     for (row = 0; row < ch; row++) {
       for (col = 0; col < cw; col++) {
@@ -342,8 +342,7 @@ bailout:
 }
 
 
-static void writeJPEG(unsigned char *jpegBuf, unsigned long jpegSize,
-                      char *filename)
+void writeJPEG(unsigned char *jpegBuf, unsigned long jpegSize, char *filename)
 {
   FILE *file = fopen(filename, "wb");
 
@@ -357,9 +356,9 @@ bailout:
 }
 
 
-static void compTest(tjhandle handle, unsigned char **dstBuf,
-                     unsigned long *dstSize, int w, int h, int pf,
-                     char *basename, int subsamp, int jpegQual, int flags)
+void compTest(tjhandle handle, unsigned char **dstBuf, unsigned long *dstSize,
+              int w, int h, int pf, char *basename, int subsamp, int jpegQual,
+              int flags)
 {
   char tempStr[1024];
   unsigned char *srcBuf = NULL, *yuvBuf = NULL;
@@ -415,10 +414,9 @@ bailout:
 }
 
 
-static void _decompTest(tjhandle handle, unsigned char *jpegBuf,
-                        unsigned long jpegSize, int w, int h, int pf,
-                        char *basename, int subsamp, int flags,
-                        tjscalingfactor sf)
+void _decompTest(tjhandle handle, unsigned char *jpegBuf,
+                 unsigned long jpegSize, int w, int h, int pf, char *basename,
+                 int subsamp, int flags, tjscalingfactor sf)
 {
   unsigned char *dstBuf = NULL, *yuvBuf = NULL;
   int _hdrw = 0, _hdrh = 0, _hdrsubsamp = -1;
@@ -483,9 +481,9 @@ bailout:
 }
 
 
-static void decompTest(tjhandle handle, unsigned char *jpegBuf,
-                       unsigned long jpegSize, int w, int h, int pf,
-                       char *basename, int subsamp, int flags)
+void decompTest(tjhandle handle, unsigned char *jpegBuf,
+                unsigned long jpegSize, int w, int h, int pf, char *basename,
+                int subsamp, int flags)
 {
   int i, n = 0;
   tjscalingfactor *sf = tjGetScalingFactors(&n);
@@ -507,8 +505,8 @@ bailout:
 }
 
 
-static void doTest(int w, int h, const int *formats, int nformats, int subsamp,
-                   char *basename)
+void doTest(int w, int h, const int *formats, int nformats, int subsamp,
+            char *basename)
 {
   tjhandle chandle = NULL, dhandle = NULL;
   unsigned char *dstBuf = NULL;
@@ -671,8 +669,8 @@ bailout:
 }
 
 
-static void initBitmap(unsigned char *buf, int width, int pitch, int height,
-                       int pf, int flags)
+void initBitmap(unsigned char *buf, int width, int pitch, int height, int pf,
+                int flags)
 {
   int roffset = tjRedOffset[pf];
   int goffset = tjGreenOffset[pf];
@@ -705,8 +703,8 @@ static void initBitmap(unsigned char *buf, int width, int pitch, int height,
 }
 
 
-static int cmpBitmap(unsigned char *buf, int width, int pitch, int height,
-                     int pf, int flags, int gray2rgb)
+int cmpBitmap(unsigned char *buf, int width, int pitch, int height, int pf,
+              int flags, int gray2rgb)
 {
   int roffset = tjRedOffset[pf];
   int goffset = tjGreenOffset[pf];
@@ -756,8 +754,8 @@ static int cmpBitmap(unsigned char *buf, int width, int pitch, int height,
 }
 
 
-static int doBmpTest(const char *ext, int width, int align, int height, int pf,
-                     int flags)
+int doBmpTest(const char *ext, int width, int align, int height, int pf,
+              int flags)
 {
   char filename[80], *md5sum, md5buf[65];
   int ps = tjPixelSize[pf], pitch = PAD(width * ps, align), loadWidth = 0,
@@ -845,7 +843,7 @@ bailout:
 }
 
 
-static int bmpTest(void)
+int bmpTest(void)
 {
   int align, width = 35, height = 39, format;
 
