@@ -187,6 +187,9 @@ cc_defaults {
         mips64: {
             srcs: ["jsimd_none.c"],
         },
+        riscv64: {
+            srcs: ["jsimd_none.c"],
+        },
     },
 
     target: {
